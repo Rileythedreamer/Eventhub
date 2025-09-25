@@ -1,9 +1,9 @@
 # EventHub
-#### [Video Demo](linkhere)
-#### Short Description:
 On Eventhub you can explore and buy tickets for events or organize your own.
 
----
+#### [Video Demo](linkhere)
+
+
 
 ## Table of Contents
 - [Overview](#overview)
@@ -18,59 +18,87 @@ On Eventhub you can explore and buy tickets for events or organize your own.
 ---
 
 ## Overview
-Eventhub is an online platform for finding events near you.
-peaple can sign up and after they do they can browse all the events that are on the website; they can filter (by category, location, date and time) and search  the events and find what they are looking for. 
-after they find what interests them they can purchase tickets for the event if it is not past / canceled or sold out.
-After they purchase tickets they'll be presented with a confirmation page.   
-People can also organize events, when a user organizes their first event, the Organizer dashboard which is used for managing their organized events and accessing sale data automatically  becomes available for them.
+Eventhub is an online platform for organizing and attending real world activities.
+### For Attendees
+Upon signing up, attendees gain access to an event catalog. They can utilize powerful search and filtering tools by category, location, date, and time to discover activities that match their interests.
+The platform allows users to purchase any number of available tickets for an event. The purchasing option is active only for events that have not been completed, cancelled, or sold out.
+After they purchase tickets they'll be presented with a confirmation page displaying all details related to their transaction.   
+The search and filter features are implemented to enhance user experience by making it faster and easier to discover relevant events.
+### For Organizers
+Users can create and manage their own events by providing the required details such as event title, description, date and time, location, ticket quantity, and pricing. When a user organizes their first event, they automatically gain access to the Organizer Dashboard. This dashboard allows organizers to view, edit, or cancel their events. It also provides comprehensive ticket sales data, including how many tickets have been sold, how many remain, and overall revenue generated. The dashboard supports filtering, enabling organizers to track and manage all of their events in one place. Access to the dashboard and related management features is restricted to users with organizer status through role-based access control.
 ---
 
 ## Distinctiveness and Complexity
 
-### 1. Celery
+My Eventhub project is distinct from an E-commerce website because while it does include ticketing (a transaction), it's only one feature amongst many.
+It's specifically distinct from Auctions because I had to manage event status and also ticket quantities when sales were made.
+A large part of my app is the event management tools for organizers.
 
+### 1. Asynchronous Task Scheduling
+  The core functionality of this project is based on people being able to book tickets for events they wanna attend. which means Events need to have a status , Organizers set a date and time for the event when they're first creating it (for when the event is going to happen), If that date has passed, people shouldn't be able to buy tickets for those events.
+  That's where celery comes in. It allows us to run code asynchronously.
+  One of the use cases for celery is running scheduled tasks in the background.
+  The way celery works is after you define the task that you wanna run in the background celery beat is like a heartbeat that beats every minute and every minute it checks if there are any tasks who's date and time has passed if so it updates those tasks status.
+  This process involves 3 main parts
+  1. Client : the Django App  where I define and run background tasks.
+  2. Message Broker: A service that holds tasks in queue untill  the worker picks them up
+  3. Worker : watches the queu for new tasks and executes them when tasks are ready for execution
+  - Celery Beat : like a timer that keeps track of when tasks enter the queu
+  
 ### 2. Organizer Dashboard
+  The organizer Dashboard is only accessible for event organizers.
+  Organizer can manage events they've organized and cancel or delete those events, they can also access ticket sale data.
 
 ### 3. Role Based Access
+  I've defined roles for all the users who've logged in and by default everyone are attenders whenever a user create their first event ever, they automatically become an organizer which allows them access to other parts of the website.
+  Only Organizers can access certain parts of the website to achieve this I had to define a new decorator very similar to login_required but the difference is it checks if the user who's trying to access a certain view function is an Organizer if not it prevents access.
 
 ## Features
-- 
-- 
+
+- Role Based Access 
+- Create Events
+- Buy tickets for events
+- keeping track of tickets sold & the tickets left quantity for each event.
+- people can only purchase tickets for "Active" events.
+- keeping track of the status of events (Active, Canceled, Compeleted, Sold Out)
+- Search & Filter events without page reload using JS and calls to the API
+- Organizer Dashboard
+  - View eveything about all the events they have ever organized on the website
+  - filter and search amongst all the events they've ever organized without page reload using JS.
+  - View Sale Data
+  - View Tickets Sold
+  - how many tcikets have been sold for each event and how many are remaining.
+  - Manage and Edit Events
+- Events Status Update using Celery 
+
 ---
 
-## Project Structure
+## Project Structure & File Breakdown
 ```
 
-project/
-├── project.py            main Audiofy file containing all core and helper functions.
-├── test_project.py       test file for testing that project.py works as expected.
-├── README.md             Documentation.
-├── requirements.txt       list of all dependencies.
-└── test_cases            contains 5 books for testing the functionality of the project.
-     ├── book1.txt        empty book.
-     ├── book2.txt        contains a book with simple chapter structure.
-     ├── book3.txt        contains a book with intro , toc and simple chapter structure.
-     ├── book4.txt        contains a book with no structure.
-     └── World.txt        the text format of around the world in 80 days.
+Eventhub/
+├── manage.py            used to run commands on the django app
+├── README.md            project docs
+├── requirements.txt     list of all dependencies. TODO 
+├── sqlite3.db           project's database file
+└── Eventhub             contains the main project files 
+     ├── settings.py     contains all configuration settings for the project
+     ├── urls.py         contains all the url patterns for the entire project
+     ├──         
+     ├── 
+     └── 
+
+└── events              contains the files for the only app for the project
+     ├── urls.py        contains all the url patterns for the events app.
+     ├── views.py       contains all the view functions for event's app (how requests that are made to the app are handled)
+     ├── models.py      contains all the defintions for my app's django models (the structure of the database tables)
+     ├── forms.py       the form defintion for Event creation based of the Event Model
+     └──    
 ````
 
-Output :
-running ```project.py test_cases/World.txt``` will result in a directory being created inside test_cases.
-the folder structure displayed above stays the same except :
-````
-└── test_cases
-     ├── book2.txt
-     ├── book3.txt
-     ├── book4.txt
-     ├── World
-     |     ├── CHAPTER I.mp3
-     |     ├── CHAPTER II.mp3
-     |     ├── ...
-     |     └── CHAPTER XXXVII.mp3
-     └── World.txt
-````
+
 ---
-### Files  Breakdown
+### Files  Breakdown TODO: maybe write an explanation for the files that i created not the ones that are already there by default
 
 
 ## Installation and Usage
@@ -79,6 +107,8 @@ the folder structure displayed above stays the same except :
 
 # install required packages
 pip install -r requirements.txt
+python3 manage.py runserver
+TODO: maybe i need to activate celery whenever i wanna run the server?
 ````
 
 ---
@@ -99,36 +129,38 @@ pip install -r requirements.txt
 - **Python**: 3.8+ (async/await support required)
 
 - **Packages**:
-  - `edge-tts` – for text-to-speech conversion
-  - `tqdm` – for progress bars
-  - `pytest` - Only required for testing, not running the program.
+  - `django` – for text-to-speech conversion
+  - `celery` – for progress bars
+  - `` - Only required for testing, not running the program.
 
 - **Standard Library (no installation needed)**:
-  - `asyncio`
-  - `sys`
-  - `re`
-  - `os`
+  - ``
+  - ``
+  - ``
+  - ``
 
 ---
 
 
 ## Future Improvements
 
-* Command Line programs are only used by developers and the target audience for my program isn't just developers I better design a different Interface for it. a website would be great.
-* Instead of the user having to type the voice name they could choose from a dropdown selector.
-* Instead of the user having to provide the ebook they could also have the option of going through ebooks that are already available and convert those if they want.
-the ebooks could be listed using an API to an open source library like [Project Gutenberg](https://www.gutenberg.org/)
-* the audiobooks that have been converted before by other users can be stored so that new users can save time if they want the already existing audiobooks
-* I think I could look for better text to speech libraries especially if there is one powered by AI  it would sound better.
+* ### Improve the Organizer Dashboard
+  - More detailed Analytics
+  - Graphs for statics and anlyziong sale data
+  
+* Better more complex Search functionality for browsing amongst events :
+  maybe people don't provide the exact title for the evnt when they are searching for it and they might have typos the search results could look past the typos, maybe that would be a better user experience.
+  (Maybe using haystack whoosh or maybe using regex)
+* adding a Reccomender AI : 
+people who have bought tickets on the website before get offered events they might be interested in that is similar to what they have enjoyed before.
+* people fill a quiz at sign up which asks them about their interests and suggests events related to those interests.
+* An E-mail is sent automatically to people who purchase tcikets with their ticket information so that they can use that e-mail on entry to the venue where the event is held.
 
-#### Testing Improvements
-I think the biggest flaw my program has are the tests they are not exactly reliable and I don't think that's how tests in the real world are written.
-I would like to learn more about mocks and fixtures in pytest because I think that my tests have a big potential fo improvement.
-I also need to learn how to test asynchronous functions/ processes.
+* 
 
 ---
 
 
 
 ## Author : **Negin Jahedi**
-# Eventhub
+
