@@ -4,7 +4,7 @@ from functools import wraps
 from django.core.paginator import Paginator
 
 
-    # function for paginating posts:
+    # function for paginating any queryset:
 def paginate_queryset(queryset, request, n):
     paginator = Paginator(queryset, n)
     page_number = request.GET.get('page', 1)
@@ -20,7 +20,7 @@ def organizer_required(view_func):
         if not request.user.is_authenticated:
             return redirect('login')
 
-        # Next ensure the user meets your "organizer" criteria
+        # Next ensure the user is 'organizer'
         if not request.user.is_organizer:
             raise PermissionDenied("Sorry, This page is only accessible for organizers .")
 

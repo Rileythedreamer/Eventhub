@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -160,3 +161,14 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'negin862@gmail.com'
 EMAIL_HOST_PASSWORD = '29781226'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+# celery beat setup
+
+
+CELERY_BEAT_SCHEDULE = {
+    "update-past-events": {
+        "task": "events.tasks.update_past_events_status",
+        "schedule": crontab(minute="*/1"),
+    },
+}

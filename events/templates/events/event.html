@@ -27,6 +27,12 @@
                 <p class="text-md text-dark-color"><strong>Time:</strong> {{event.time}} </p>
                 <p class="text-md text-dark-color"><strong>Price:</strong> ${{event.price}} per ticket</p>
                 <p class="text-md text-dark-color"><strong>Tickets Remaining:</strong> {{event.tickets_remaining}}</p>
+                {% if event.status == "past" %}
+                <p class="alert alert-info  text-center mt-5"> Ticket sales are closed! </p>
+                {% endif %}
+                {% if event.status == "sold-out" %}
+                <p class="alert alert-info  text-center mt-5"> Event Sold Out! </p>
+                {% endif %}
             </div>
             {% if request.user != event.organizer %}
             <form action="{% url 'buy' event.id %}" method="post">

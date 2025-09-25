@@ -162,13 +162,14 @@ def buy_ticket_view(request, event_id):
                 event_obj.is_sold_out = True
                 event_obj.status = "sold_out"
             messages.success(request, f"ticket was purchased successfully.")
+            # ticket_details = f"Event: {ticket_bought.event.title}\nDate: {ticket_bought.event.date}\n"
+            # send_ticket_email(request.user.email, ticket_details)
             return render(request, "events/reciept.html", {
                 "ticket_bought" : ticket_bought,
                 "total_price" : total_price
             })
             
-            ticket_details = f"Event: {ticket.event.name}\nDate: {ticket.event.date}\n"
-            send_ticket_email(request.user.email, ticket_details)
+            
        
     return HttpResponseRedirect(reverse("event", args=(event_id,) )) 
 

@@ -71,9 +71,15 @@ class Event(models.Model):
         return False
     
     def is_passed(self):
-        if self.date < timezone.now().date():
-            self.status = "past"
-            self.save()
+        return self.date < timezone.now().date()
+    
+    def mark_as_passed(self):
+        self.status = "past"
+        self.save()
+    # def is_passed(self):
+    #     if self.date < timezone.now().date():
+    #         self.status = "past"
+    #         self.save()
     
 class Review(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="reviews")
