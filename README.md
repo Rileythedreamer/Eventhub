@@ -99,12 +99,12 @@ EventHub/
 │   ├── models.py         contains all the definitions for my app's Django models 
 │   ├── forms.py          the form definition for Event creation based on the Event Model
 │   ├── helper.py         includes 2 functions, paginate_queryset & organizer_required decorator  
-│   ├── search_indexes.py contains EvnetIndex defintion for haystack (currently unused)
-│   ├── tasks.py          contains the defintion for celery's scheduled task `update_past_events_status()`
+│   ├── search_indexes.py contains EventIndex definition for haystack (currently unused)
+│   ├── tasks.py          contains the definition for celery's scheduled task `update_past_events_status()`
 │   ├── utils.py          contains `send_ticket_email()` used for automating sending e-mail notifications
 │   ├── admin.py          default file created by django to define which models are displayed on django's admin panel
 │   ├── apps.py           default file created by django to configure your app
-│   ├── tests.py          automatically created by django which would conatin your tests (currently unused)
+│   ├── tests.py          automatically created by django which would contain your tests (currently unused)
 │   ├── templates/        
 │   │   ├── events/       contains all django html templates for the events app
 │   │   └── search/       contains event_text.txt, a template used by haystack for indexing
@@ -132,31 +132,31 @@ EventHub/
 
 - **whoosh-index** : this directory was automatically created by whoosh when i built an index to store search index data.
 During the development of this project I experimented with whoosh to allow for  more advanced search capabilities.
-Currently I am not using it in the events app but I kept the files for fututre enhancements.
+Currently I am not using it in the events app but I kept the files for future enhancements.
 
 - **helper.py** : 
 - `paginate_queryset()` : a function I wrote similar to the one I used in the Network project
 used to paginate any set of objects using django's paginator. 
 It's used for displaying a limited number of events on the homepage of the events app and also for displaying a limited number of tickets on the organizer dashboard.
 
-- `organizer_required()` : is a decorator function used for achieveing role based access.
+- `organizer_required()` : is a decorator function used for achieving role based access.
 this decorator works similarly to django's own `login_required` decorator, It prevents non organizers from accessing features that should be only accessible to organizers.
 
-- `search_indexes.py`: As I mentioned I experimented with haystack whoosh for implementing complex search features, this file includes the core function that would enable that feature. It's only content is a class defintion called EventIndex this class is used to index the database table called `events_event` (which was created using the Event model)
+- `search_indexes.py`: As I mentioned I experimented with haystack whoosh for implementing complex search features, this file includes the core function that would enable that feature. It's only content is a class definition called EventIndex this class is used to index the database table called `events_event` (which was created using the Event model)
 Haystack's indexes module lets me define an index for any field in the Event model. Once an index is defined, you can search that field using Haystack. For example, if you only create an index on the title field, then that's the only field you can search through with Haystack.
 
 - `tasks.py` : As mentioned in the [Distinctiveness and Complexity](#distinctiveness-and-complexity)
  section, I used Celery to define tasks that run on a predefined schedule. The tasks.py file is the standard way to integrate Celery with Django. It contains the function that Celery executes on schedule, which is configured in settings.py. 
 
 - `events/templates/events/search/indexes/events/event_text.txt` :
-As mentioned before haystack was experimented with, this file is another one of the requirments of enabling haystack's search functionality to work.
+As mentioned before haystack was experimented with, this file is another one of the requirements of enabling haystack's search functionality to work.
 this template is used by haystack to figure out what content from the Event model should be indexed for.
 currently includes only one line: `{{ object.title }}` which enables haystack to search the title field of the event model.
 Although this feature is disabled on the current version of the app I kept the files for future use.
 
-- `Evenhub/celery.py` : 
-accourding to celery's own docs this file is the reccomended way to make celery work in your project.
-after it loads celery's configuration from the settings.py file, it enables celery to autodiscover tasks on its own.
+- `Eventhub/celery.py` : 
+according to celery's own docs this file is the recommended way to make celery work in your project.
+after it loads celery's configuration from the settings.py file, it enables celery to auto discover tasks on its own.
 
 
 ## Dependencies
@@ -169,7 +169,7 @@ EventHub requires the following dependencies to run properly:
 - **django-celery-beat** – to manage periodic tasks with Celery.
 - **Redis** – used as the message broker for Celery (required only if scheduled tasks are enabled).
 - **SQLite** – default database for development (`db.sqlite3`).
-### Depndencies for Partially Implemented features : 
+### Dependencies for Partially Implemented features :  
 - **Haystack** – to provide search functionality.
 - **Whoosh** – search engine backend for Haystack (currently disabled, kept for future improvements).
 - **PayPal SDK** (`paypal.standard.ipn`, `paypal.standard.forms`) – for handling payments.
@@ -189,6 +189,7 @@ EventHub requires the following dependencies to run properly:
    Create the database tables required by Django:
 
    ```bash
+   python3 manage.py makemigrations events
    python3 manage.py migrate
    ```
 
@@ -205,7 +206,7 @@ EventHub requires the following dependencies to run properly:
    python3 manage.py runserver
    ```
 
-   Your app will be available at `http://127.0.0.1:8000/`.
+   Eventhub will be available at `http://127.0.0.1:8000/`.
 
 5. **Run Celery for Event Status Update tasks **
    Open a new terminal and run:
@@ -229,17 +230,17 @@ EventHub requires the following dependencies to run properly:
 
 * ### Improve the Organizer Dashboard
   - More detailed Analytics
-  - Graphs for statics and anlyziong sale data
+  - Graphs for statics and analyzing sale data
   
 * ### Enhanced Search :
   I experimented with Whoosh for advanced search and filtering. While it’s not needed for the current goals of EventHub, the existing whoosh-index files could be used in the future to implement typo-tolerant or more complex search functionality.
-  Implementing this feature will allow users to browse events more effciently.
-* ### Personalized Reccomendations:
-  * adding a Reccomender AI : 
+  Implementing this feature will allow users to browse events more efficiently.
+* ### Personalized Recommendations:
+  * adding a Recommender AI : 
   people who have bought tickets on the website before, get offered events they might be interested in that is similar to what they have enjoyed before.
   * people fill a quiz at sign up which asks them about their interests and suggests events related to those interests.
 * ### Automatic E-mail Notifications :
-  An E-mail is sent automatically to people who purchase tcikets containing their ticket information so that they can use that e-mail on entry to the venue where the event is held. This feature was experimented with but not fully implemented in the current version due to time contraints.
+  An E-mail is sent automatically to people who purchase tickets containing their ticket information so that they can use that e-mail on entry to the venue where the event is held. This feature was experimented with but not fully implemented in the current version due to time constraints.
 ---
 
 ## Author : **Negin Jahedi**
